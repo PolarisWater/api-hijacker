@@ -1,11 +1,11 @@
 from __future__ import annotations
 import types
 
-import exceptions
+from . import exceptions
 
-import time
-import requests
 import cloudscraper
+import requests
+import time
 
 
 class HTTPErrorHandler:
