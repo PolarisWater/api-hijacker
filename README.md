@@ -3,7 +3,16 @@
 This module was built to easily create python wrappers onto existing APIs.\
 Using the [cloudscraper](https://github.com/VeNoMouS/cloudscraper) module most website's endpoints can be accessed without issues.
 
-**Use case example:**
+## Installation 
+
+[![PyPI version](https://img.shields.io/pypi/v/api-hijacker.svg)](https://pypi.org/project/api-hijacker/)
+
+You can install this package using pip:
+```sh
+pip install api-hijacker
+```
+
+## Use case example:
 
 <pre>
 Project/
