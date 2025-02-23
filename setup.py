@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="apiCore",
+    name="api-hijacker",
     version="0.1.0",
     packages=find_packages(),
     install_requires=[
@@ -13,7 +13,7 @@ setup(
     description="Create your own python library for interacting with any website's API.",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
-    url="https://github.com/PolarisWater/apiCore",
+    url="https://github.com/PolarisWater/api-hijacker",
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
