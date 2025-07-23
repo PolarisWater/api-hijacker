@@ -125,16 +125,16 @@ def request(retries: int = 5, errorHandler: HTTPErrorHandler = HTTPErrorHandler(
 
                 if status == 'stop':
                     if response.status_code:
-                        raise exceptions.TerminalStatusCodeError(response.status_code, func.__name__)
+                        raise exceptions.TerminalStatusCode(response.status_code, func.__name__)
                     else:
-                        raise exceptions.ExceptionInRequestFunctionError(func.__name__)
+                        raise exceptions.ExceptionInRequestFunction(func.__name__)
 
                 tries += 1
                 time.sleep(wait_time)
                 if exponentialBackoff:
                     wait_time += 1
 
-            raise exceptions.AllRetriesFailedError(retries, response.status_code, func.__name__)
+            raise exceptions.AllRetriesFailed(retries, response.status_code, func.__name__)
 
         return wrapper
     return decorator
