@@ -61,9 +61,11 @@ def getHandle():  # handle must act like requests module
 
 def sendRequest(method: str, url: str, **kwargs) -> requests.Response:
     handle = getHandle()
-    response = handle.request(method, url, **kwargs)
-    handle.close()
-    return response
+    try:
+        response = handle.request(method, url, **kwargs)
+        return response
+    finally:
+        handle.close()
 
 
 def get(url: str, **kwargs) -> requests.Response:
