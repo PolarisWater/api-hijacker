@@ -14,28 +14,28 @@ class HTTPErrorHandler:
         self.terminal = set(terminal or [400, 401, 403, 404, 409, 501])  # set of status codes that should not be retried
 
     def allow(self, status_codes: int | list[int]) -> HTTPErrorHandler:  # add one or multiple status codes that should be accepted
+        accepted = set(self.accepted)
         if isinstance(status_codes, int):
-            return HTTPErrorHandler(
-                accepted=set(self.accepted).add(status_codes),
-                terminal=self.terminal
-            )
+            accepted.add(status_codes)
         else:
-            return HTTPErrorHandler(
-                accepted=set(self.accepted).update(status_codes),
-                terminal=self.terminal
-            )
+            accepted.update(status_codes)
+
+        return HTTPErrorHandler(
+            accepted=accepted,
+            terminal=self.terminal
+        )
 
     def avoid(self, status_codes: int | list[int]) -> HTTPErrorHandler:  # add one or multiple status codes that should be avoided (no retries if received)
+        terminal = set(self.terminal)
         if isinstance(status_codes, int):
-            return HTTPErrorHandler(
-                accepted=self.accepted,
-                terminal=set(self.terminal).add(status_codes)
-            )
+            terminal.add(status_codes)
         else:
-            return HTTPErrorHandler(
-                accepted=self.accepted,
-                terminal=set(self.terminal).update(status_codes)
-            )
+            terminal.update(status_codes)
+
+        return HTTPErrorHandler(
+            accepted=self.accepted,
+            terminal=terminal
+        )
 
     def __call__(self, func) -> tuple[requests.Response, str]:
         try:
@@ -60,7 +60,10 @@ def getHandle():  # handle must act like requests module
 
 
 def sendRequest(method: str, url: str, **kwargs) -> requests.Response:
-    return getHandle().request(method, url, **kwargs)
+    handle = getHandle()
+    response = handle.request(method, url, **kwargs)
+    handle.close()
+    return response
 
 
 def get(url: str, **kwargs) -> requests.Response:
