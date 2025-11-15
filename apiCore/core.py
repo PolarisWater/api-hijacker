@@ -56,7 +56,10 @@ class HTTPErrorHandler:
 
 
 def getHandle():  # handle must act like requests module
-    return cloudscraper.create_scraper()
+    return cloudscraper.create_scraper(
+        auto_refresh_on_403=False,
+        max_403_retries=0
+    )
 
 
 def sendRequest(method: str, url: str, **kwargs) -> requests.Response:
