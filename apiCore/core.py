@@ -120,6 +120,9 @@ def request(retries: int = 5, errorHandler: HTTPErrorHandler = HTTPErrorHandler(
             response = requests.Response()
             while tries < retries:
                 response, status = errorHandler(lambda: func(*args, **kwargs))
+
+                print(response.content)
+
                 if status == 'ok':
                     return response
 
