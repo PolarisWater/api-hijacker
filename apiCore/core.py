@@ -48,10 +48,12 @@ class HTTPErrorHandler:
 
             return response, 'retry'  # retry on other status codes
 
-        except requests.RequestException:
+        except requests.RequestException as e:
+            print(f"Request exception: {e}")
             return requests.Response(), 'retry'  # retry on request exception
 
-        except Exception:
+        except Exception as e:
+            print(f"Exception: {e}")
             return requests.Response(), 'stop'  # stop retries if a non-http error is detected
 
 
