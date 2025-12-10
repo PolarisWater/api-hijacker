@@ -58,10 +58,14 @@ class HTTPErrorHandler:
 
 
 def getHandle():  # handle must act like requests module
-    return cloudscraper.create_scraper(
+    handle = cloudscraper.create_scraper(
         auto_refresh_on_403=False,
         max_403_retries=0
     )
+
+    handle.headers.update({"Accept-Encoding": "gzip, deflate"})
+
+    return handle
 
 
 def sendRequest(method: str, url: str, **kwargs) -> requests.Response:
