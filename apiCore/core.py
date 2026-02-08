@@ -49,11 +49,9 @@ class HTTPErrorHandler:
             return response, 'retry'  # retry on other status codes
 
         except requests.RequestException as e:
-            print(f"Request exception: {e}")
             return requests.Response(), 'retry'  # retry on request exception
 
         except Exception as e:
-            print(f"Exception: {e}")
             return requests.Response(), 'stop'  # stop retries if a non-http error is detected
 
 
@@ -129,8 +127,6 @@ def request(retries: int = 5, errorHandler: HTTPErrorHandler = HTTPErrorHandler(
             response = requests.Response()
             while tries < retries:
                 response, status = errorHandler(lambda: func(*args, **kwargs))
-
-                print(response.content)
 
                 if status == 'ok':
                     return response
