@@ -6,7 +6,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         "requests>=2.9.2",
-        "cloudscraper>=1.2.70"
+        "cloudscraper @ git+https://github.com/VeNoMouS/cloudscraper.git@edef7647e76ff23a57653e9da6d540ad4e53d1a2"
     ],
     author="PolarisWater",
     author_email="",

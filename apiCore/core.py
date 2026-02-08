@@ -48,15 +48,24 @@ class HTTPErrorHandler:
 
             return response, 'retry'  # retry on other status codes
 
-        except requests.RequestException:
+        except requests.RequestException as e:
+            print(f"Request exception: {e}")
             return requests.Response(), 'retry'  # retry on request exception
 
-        except Exception:
+        except Exception as e:
+            print(f"Exception: {e}")
             return requests.Response(), 'stop'  # stop retries if a non-http error is detected
 
 
 def getHandle():  # handle must act like requests module
-    return cloudscraper.create_scraper()
+    handle = cloudscraper.create_scraper(
+        auto_refresh_on_403=False,
+        max_403_retries=0
+    )
+
+    handle.headers.update({"Accept-Encoding": "gzip, deflate"})
+
+    return handle
 
 
 def sendRequest(method: str, url: str, **kwargs) -> requests.Response:
@@ -120,6 +129,9 @@ def request(retries: int = 5, errorHandler: HTTPErrorHandler = HTTPErrorHandler(
             response = requests.Response()
             while tries < retries:
                 response, status = errorHandler(lambda: func(*args, **kwargs))
+
+                print(response.content)
+
                 if status == 'ok':
                     return response
 
