@@ -6,6 +6,7 @@ from . import exceptions
 import cloudscraper
 import requests
 import time
+import traceback
 
 
 class HTTPErrorHandler:
@@ -37,22 +38,22 @@ class HTTPErrorHandler:
             terminal=terminal
         )
 
-    def __call__(self, func) -> tuple[requests.Response, str]:
+    def __call__(self, func) -> tuple[requests.Response, str, str]:
         try:
             response: requests.Response = func()  # catch http errors form this function
             if response.status_code in self.accepted:
-                return response, 'ok'  # response it accepted
+                return response, 'ok', ""  # response it accepted
 
             if response.status_code in self.terminal:
-                return response, 'stop'  # stop retries - resending won't help
+                return response, 'stop', ""  # stop retries - resending won't help
 
-            return response, 'retry'  # retry on other status codes
+            return response, 'retry', ""  # retry on other status codes
 
         except requests.RequestException as e:
-            return requests.Response(), 'retry'  # retry on request exception
+            return requests.Response(), 'retry', traceback.format_exc()  # retry on request exception
 
         except Exception as e:
-            return requests.Response(), 'stop'  # stop retries if a non-http error is detected
+            return requests.Response(), 'stop', traceback.format_exc()  # stop retries if a non-http error is detected
 
 
 def getHandle():  # handle must act like requests module
@@ -126,23 +127,23 @@ def request(retries: int = 5, errorHandler: HTTPErrorHandler = HTTPErrorHandler(
             tries = 0
             response = requests.Response()
             while tries < retries:
-                response, status = errorHandler(lambda: func(*args, **kwargs))
+                response, status, tracebck = errorHandler(lambda: func(*args, **kwargs))
 
                 if status == 'ok':
                     return response
 
                 if status == 'stop':
                     if response.status_code:
-                        raise exceptions.TerminalStatusCode(response.status_code, func.__name__)
+                        raise exceptions.TerminalStatusCode(response.status_code, func.__name__, tracebck)
                     else:
-                        raise exceptions.ExceptionInRequestFunction(func.__name__)
+                        raise exceptions.ExceptionInRequestFunction(func.__name__, tracebck)
 
                 tries += 1
                 time.sleep(wait_time)
                 if exponentialBackoff:
                     wait_time += 1
 
-            raise exceptions.AllRetriesFailed(retries, response.status_code, func.__name__)
+            raise exceptions.AllRetriesFailed(retries, response.status_code, func.__name__, "")
 
         return wrapper
     return decorator
